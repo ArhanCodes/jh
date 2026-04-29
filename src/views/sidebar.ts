@@ -5,9 +5,10 @@ export function renderSidebar(store: Store): HTMLElement {
   const aside = document.createElement('aside');
   aside.className = 'sidebar';
 
-  /* brand block */
-  const brand = document.createElement('div');
+  /* brand block — clickable to welcome */
+  const brand = document.createElement('button');
   brand.className = 'sidebar-brand';
+  brand.type = 'button';
   brand.innerHTML = `
     <div class="sidebar-brand-logo">
       <span class="brand-j">J</span><span class="brand-h">H</span>
@@ -20,6 +21,11 @@ export function renderSidebar(store: Store): HTMLElement {
     </div>
     <div class="sidebar-brand-loc">Dubai <span>·</span> Residential Design</div>
   `;
+  brand.addEventListener('click', () => {
+    store.set(() => ({ view: 'welcome' }));
+    const main = document.querySelector('.main');
+    if (main) main.scrollTop = 0;
+  });
   aside.appendChild(brand);
 
   const list = document.createElement('ul');
@@ -43,7 +49,7 @@ export function renderSidebar(store: Store): HTMLElement {
       <span class="module-nav-status"></span>
     `;
     link.addEventListener('click', () => {
-      store.set(() => ({ activeModuleId: mod.id, activeTab: 'lesson' }));
+      store.set(() => ({ view: 'module', activeModuleId: mod.id, activeTab: 'lesson' }));
       const main = document.querySelector('.main');
       if (main) main.scrollTop = 0;
     });
@@ -63,10 +69,11 @@ export function renderSidebar(store: Store): HTMLElement {
 
   const update = () => {
     const state = store.get();
+    const onModule = state.view === 'module';
     list.querySelectorAll<HTMLElement>('.module-nav-item').forEach((el) => {
       const id = el.dataset.moduleId;
       if (!id) return;
-      el.classList.toggle('active', id === state.activeModuleId);
+      el.classList.toggle('active', onModule && id === state.activeModuleId);
       el.classList.toggle('completed', store.isComplete(id));
       const status = el.querySelector('.module-nav-status');
       if (status) {

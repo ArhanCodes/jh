@@ -7,6 +7,7 @@ import { renderPromptBuilder } from './views/promptBuilder';
 import { renderPaletteBuilder } from './views/paletteBuilder';
 import { renderQuiz } from './views/quiz';
 import { createSearchOverlay } from './views/search';
+import { renderWelcome } from './views/welcome';
 
 const store = new Store();
 
@@ -22,7 +23,7 @@ function renderApp(): HTMLElement {
   const header = document.createElement('header');
   header.className = 'header';
   header.innerHTML = `
-    <div class="header-brand">
+    <button class="header-brand" id="brand-home" type="button" aria-label="Welcome">
       <span class="brand-mark">
         <span class="brand-j">J</span><span class="brand-h">H</span>
         <span class="brand-script">design</span>
@@ -31,7 +32,7 @@ function renderApp(): HTMLElement {
         <span class="brand-tag-1">JH Interiors</span>
         <span>Modern · Refined · Timeless</span>
       </span>
-    </div>
+    </button>
     <div class="header-search">
       <span class="header-search-icon">⌕</span>
       <input type="text" placeholder="Search the course   ⌘K" id="header-search-input" autocomplete="off" />
@@ -69,6 +70,12 @@ function renderApp(): HTMLElement {
     search.open();
   });
 
+  /* brand wordmark -> welcome */
+  header.querySelector<HTMLButtonElement>('#brand-home')!.addEventListener('click', () => {
+    store.set(() => ({ view: 'welcome' }));
+    main.scrollTop = 0;
+  });
+
   /* ===== Render progress UI (header + sidebar) ===== */
   let lastModuleId = '';
   let lastTab: string = '';
@@ -82,6 +89,7 @@ function renderApp(): HTMLElement {
   };
 
   /* ===== Render module content (full rebuild) ===== */
+  let lastView = '';
   const renderMain = () => {
     const state = store.get();
 
@@ -89,11 +97,24 @@ function renderApp(): HTMLElement {
     renderProgress();
 
     /* skip wholesale rebuild if the view didn't change — protects locally-mutated content like quiz results */
-    if (state.activeModuleId === lastModuleId && state.activeTab === lastTab) {
+    if (
+      state.view === lastView &&
+      state.activeModuleId === lastModuleId &&
+      state.activeTab === lastTab
+    ) {
       return;
     }
+    lastView = state.view;
     lastModuleId = state.activeModuleId;
     lastTab = state.activeTab;
+
+    /* welcome view branch */
+    if (state.view === 'welcome') {
+      mainInner.innerHTML = '';
+      mainInner.appendChild(renderWelcome(store));
+      main.scrollTop = 0;
+      return;
+    }
 
     const mod = moduleById(state.activeModuleId);
     const idx = modules.findIndex((m) => m.id === mod.id);

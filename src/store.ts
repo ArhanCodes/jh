@@ -12,6 +12,7 @@ const defaultProgress = (): Record<string, ProgressEntry> => {
 };
 
 const initialState = (): AppState => ({
+  view: 'welcome',
   activeModuleId: modules[0]!.id,
   activeTab: 'lesson',
   progress: defaultProgress(),
@@ -24,6 +25,7 @@ const load = (): AppState => {
     const parsed = JSON.parse(raw) as Partial<AppState>;
     const base = initialState();
     return {
+      view: parsed.view ?? base.view,
       activeModuleId: parsed.activeModuleId ?? base.activeModuleId,
       activeTab: parsed.activeTab ?? base.activeTab,
       progress: { ...base.progress, ...(parsed.progress ?? {}) },
@@ -86,6 +88,19 @@ export class Store {
     const p = this.state.progress[moduleId];
     if (!p) return false;
     return p.lessonComplete && p.quizScore !== null && p.quizScore >= Math.ceil(p.quizTotal * 0.5);
+  }
+
+  hasAnyProgress(): boolean {
+    return Object.values(this.state.progress).some(
+      (p) => p.lessonComplete || p.quizScore !== null
+    );
+  }
+
+  nextIncompleteModuleId(): string {
+    for (const m of modules) {
+      if (!this.isComplete(m.id)) return m.id;
+    }
+    return modules[0]!.id;
   }
 
   private notify(): void {

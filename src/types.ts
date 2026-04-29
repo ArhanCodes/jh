@@ -47,6 +47,7 @@ export interface ProgressEntry {
 }
 
 export interface AppState {
+  view: 'welcome' | 'module';
   activeModuleId: string;
   activeTab: 'lesson' | 'try' | 'quiz';
   progress: Record<string, ProgressEntry>;
