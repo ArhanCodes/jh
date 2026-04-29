@@ -6,6 +6,9 @@ export function renderSidebar(store: Store): HTMLElement {
   aside.className = 'sidebar';
 
   /* brand block — clickable to welcome */
+  const brandWrap = document.createElement('div');
+  brandWrap.className = 'sidebar-brand-wrap';
+
   const brand = document.createElement('button');
   brand.className = 'sidebar-brand';
   brand.type = 'button';
@@ -26,7 +29,25 @@ export function renderSidebar(store: Store): HTMLElement {
     const main = document.querySelector('.main');
     if (main) main.scrollTop = 0;
   });
-  aside.appendChild(brand);
+  brandWrap.appendChild(brand);
+
+  /* Instagram link — sibling of the brand button */
+  const ig = document.createElement('a');
+  ig.className = 'sidebar-brand-ig';
+  ig.href = 'https://www.instagram.com/jhdesign.interior/';
+  ig.target = '_blank';
+  ig.rel = 'noopener noreferrer';
+  ig.innerHTML = `
+    <svg class="sidebar-brand-ig-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
+      <path d="M16 11.37A4 4 0 1112.63 8 4 4 0 0116 11.37z"/>
+      <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/>
+    </svg>
+    <span>@jhdesign.interior</span>
+  `;
+  brandWrap.appendChild(ig);
+
+  aside.appendChild(brandWrap);
 
   const list = document.createElement('ul');
   list.className = 'module-nav';
