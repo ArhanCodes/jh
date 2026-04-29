@@ -8,6 +8,7 @@ import { renderPaletteBuilder } from './views/paletteBuilder';
 import { renderQuiz } from './views/quiz';
 import { createSearchOverlay } from './views/search';
 import { renderWelcome } from './views/welcome';
+import { createNobu } from './views/nobu';
 
 const store = new Store();
 
@@ -62,6 +63,11 @@ function renderApp(): HTMLElement {
   /* ===== SEARCH OVERLAY ===== */
   const search = createSearchOverlay(store);
   app.appendChild(search.element);
+
+  /* ===== NOBU CHAT ===== */
+  const nobu = createNobu();
+  app.appendChild(nobu.trigger);
+  app.appendChild(nobu.panel);
 
   /* search input -> open overlay */
   const headerSearchInput = header.querySelector<HTMLInputElement>('#header-search-input')!;
